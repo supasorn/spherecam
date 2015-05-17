@@ -16,10 +16,10 @@ os.chdir(sys.path[0])
 if sys.argv[1] == "1":
     cmd("cp interfaces /etc/network/interfaces")
     cmd("killall wpa_supplicant")
-    cmd("ifconfig wlan0 10.5.5.1")
     cmd("service networking restart")
-    cmd("service isc-dhcp-server restart")
     cmd("service hostapd restart")
+    cmd("ifconfig wlan0 10.5.5.1")
+    cmd("service isc-dhcp-server restart")
 else:
     cmd("cp interfaces.backup /etc/network/interfaces")
     cmd("service hostapd stop")
