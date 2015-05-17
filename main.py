@@ -8,6 +8,7 @@ import exifread
 FLAGS = gflags.FLAGS
 gflags.DEFINE_string('output', 'cap4', 'Output folder')
 gflags.DEFINE_string('iso', 'auto', 'ISO')
+gflags.DEFINE_bool('capture', False, 'start real capturing')
 
 def measure(ISO):
     print "Configuring camera setting..."
@@ -57,9 +58,11 @@ class Panner:
             for j in r:
                 self.sv.setAngle(j)
                 print "Capture (%d) %d %d %s" % (count, j, i, self.config)
-                #os.system('raspistill -o ' + output + "/" + ("%03d" % count) + '.jpg -t 3')
+                if FLAGS.capture:
+                    os.system('raspistill -o ' + FLAGS.output + "/" + ("%03d" % count) + '.jpg -t 1 -n ' + self.config)
+                else:
+                    time.sleep(0.5)
                 count += 1
-                time.sleep(0.5)
             self.st.move(1, int(round(self.panDiff * 512.0 / 360)), 0.008)
 
     def done(self):
