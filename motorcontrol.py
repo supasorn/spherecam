@@ -2,19 +2,19 @@ import RPi.GPIO as GPIO
 import wiringpi2 as wiringpi
 import time
 class Servo:
-    def __init__(self, base = 26):
+    def __init__(self, base0 = 27, base90 = 73):
         wiringpi.wiringPiSetupGpio()
         wiringpi.pinMode(18,2)
         wiringpi.pwmSetMode(0)
         wiringpi.pwmSetClock(400)
         wiringpi.pwmSetRange(1024)
         wiringpi.pwmWrite(18, 0)
-        self.base = base
+        self.base0 = base0
+        self.base90 = base90
         self.setAngle(90)
 
     def setAngle(self, deg):
-        #print (self.base + 93 *deg / 180)
-        wiringpi.pwmWrite(18, self.base + 93 * deg / 180)
+        wiringpi.pwmWrite(18, int(round(self.base0 + (self.base90 - self.base0) * deg / 90.0)))
     def done(self):
         wiringpi.pinMode(18, 0)
 

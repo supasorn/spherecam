@@ -4,15 +4,18 @@ import sys
 import gflags
 import re
 import exifread
+import math
 
 FLAGS = gflags.FLAGS
 gflags.DEFINE_string('output', 'cap4', 'Output folder')
-gflags.DEFINE_string('iso', 'auto', 'ISO')
+gflags.DEFINE_string('iso', '200', 'ISO')
+gflags.DEFINE_string('bracket', '1.58,-1.58', 'exposure bracketing')
 gflags.DEFINE_bool('capture', False, 'start real capturing')
+gflags.DEFINE_string('ud', '80,-80,20', 'Up Down direction')
 
 def measure(ISO):
     print "Configuring camera setting..."
-    et = os.popen("raspistill -n -t 5000 -o test.jpg -ISO " + ISO + " -set 2>&1").read().split("\n")
+    et = os.popen("raspistill -n -t 3000 -o test.jpg -ISO " + ISO + " -set 2>&1").read().split("\n")
     lastline = et[-2]
     exp = re.findall("now (\d*)", et[-3])[0]
     #print exp
@@ -33,36 +36,42 @@ class Panner:
         self.pan = 0
         self.st = Stepper()
         self.sv = Servo()
-        self.config = ""
+        self.sv.setAngle(90)
+        for i in range(1):
+            if i > 0:
+                self.st.move(1, int(round(90 * 512.0 / 360)), 0.003)
+            self.ss, R, B, iso = measure(FLAGS.iso)
+            print self.ss, R, B, iso
 
-    def setConfig(self, config):
-        exp, R, B, iso = config
-        self.config = "-ISO " + str(iso) + " -awb off -awbg " + str(R) + "," + str(B) + " -ss " + str(exp)
+        self.config = "-ISO " + str(iso) + " -awb off -awbg " + str(R) + "," + str(B)
+        self.bracket = [0.0] + [float(x.strip()) for x in FLAGS.bracket.split(",")]
 
-    def setPanTilt(self, pan, panDiff, tiltLow, tiltHigh, tiltDiff):
+    def setPanTilt(self, pan, panDiff):
         self.pan = pan
         self.panDiff = panDiff
-        self.tiltLow = 90 + tiltLow
-        self.tiltHigh = 90 + tiltHigh
-        self.tiltDiff = tiltDiff
+        tilt = [int(x.strip()) for x in FLAGS.ud.split(",")]
+        self.tiltLow = 90 + tilt[1] 
+        self.tiltHigh = 90 + tilt[0]
+        self.tiltDiff = tilt[2]
 
     def capture(self):
         sw = 0
         count = 1
         for i in range(0, self.pan, self.panDiff):
-            if sw  == 0:
-                r = range(self.tiltLow, self.tiltHigh+1, self.tiltDiff)
-            else:
-                r = range(self.tiltHigh, self.tiltLow-1, -self.tiltDiff)
+            r = range(self.tiltHigh, self.tiltLow-1, -self.tiltDiff)
+            if sw == 0:
+                r = r[::-1]
             sw ^= 1
             for j in r:
                 self.sv.setAngle(j)
-                print "Capture (%d) %d %d %s" % (count, j, i, self.config)
-                if FLAGS.capture:
-                    os.system('raspistill -o ' + FLAGS.output + "/" + ("%03d" % count) + '.jpg -t 1 -n ' + self.config)
-                else:
-                    time.sleep(0.5)
-                count += 1
+                for k in self.bracket:
+                    config = self.config + " -ss " + str(self.ss * (2 ** k))
+                    print "Capture (%d) %d %d %s" % (count, j - 90, i, config)
+                    if FLAGS.capture:
+                        os.system('raspistill -o ' + FLAGS.output + "/" + ("%03d" % count) + '.jpg -t 1 -n ' + config)
+                    else:
+                        time.sleep(0.5)
+                    count += 1
             self.st.move(1, int(round(self.panDiff * 512.0 / 360)), 0.008)
 
     def done(self):
@@ -78,10 +87,8 @@ def main(argv):
 
     if not os.path.exists(FLAGS.output):
         os.mkdir(FLAGS.output)
-    config = measure(FLAGS.iso)
     p = Panner()
-    p.setConfig(config)
-    p.setPanTilt(360, 36, -80, 80, 20)
+    p.setPanTilt(360, 36)
     p.capture()
     p.done()
 

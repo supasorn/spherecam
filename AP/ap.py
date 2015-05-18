@@ -15,7 +15,7 @@ if len(sys.argv) != 2:
 os.chdir(sys.path[0])
 print "SphereCam Script"
 #f = open("/home/pi/run.txt", "w")
-time.sleep(5)
+time.sleep(3)
 
 if sys.argv[1] == "1":
     cmd("cp interfaces /etc/network/interfaces")
