@@ -7,7 +7,7 @@ import exifread
 import math
 
 FLAGS = gflags.FLAGS
-gflags.DEFINE_string('output', 'cap4', 'Output folder')
+gflags.DEFINE_string('output', 'cap5', 'Output folder')
 gflags.DEFINE_string('iso', '200', 'ISO')
 gflags.DEFINE_string('bracket', '1.58,-1.58', 'exposure bracketing')
 gflags.DEFINE_bool('capture', False, 'start real capturing')
@@ -37,13 +37,24 @@ class Panner:
         self.st = Stepper()
         self.sv = Servo()
         self.sv.setAngle(90)
-        for i in range(1):
+        lss = []
+        lR = []
+        lB = []
+        liso = []
+        probe = 4
+        for i in range(probe):
             if i > 0:
                 self.st.move(1, int(round(90 * 512.0 / 360)), 0.003)
-            self.ss, R, B, iso = measure(FLAGS.iso)
-            print self.ss, R, B, iso
+            ss, R, B, iso = measure(FLAGS.iso)
+            lss.append(ss)
+            lR.append(R)
+            lB.append(B)
+            liso.append(iso)
 
-        self.config = "-ISO " + str(iso) + " -awb off -awbg " + str(R) + "," + str(B)
+            print ss, R, B, iso
+
+        self.config = "-ISO " + str(sum(liso) / probe) + " -awb off -awbg " + str(sum(lR) / probe) + "," + str(sum(lB) / probe)
+        self.ss = sum(lss) / probe
         self.bracket = [0.0] + [float(x.strip()) for x in FLAGS.bracket.split(",")]
 
     def setPanTilt(self, pan, panDiff):
@@ -64,14 +75,14 @@ class Panner:
             sw ^= 1
             for j in r:
                 self.sv.setAngle(j)
-                for k in self.bracket:
-                    config = self.config + " -ss " + str(self.ss * (2 ** k))
-                    print "Capture (%d) %d %d %s" % (count, j - 90, i, config)
+                for k in range(len(self.bracket)):
+                    config = self.config + " -ss " + str(self.ss * (2 ** self.bracket[k]))
+                    print "Capture (%03d_%d) %d %d %s" % (count, k, j - 90, i, config)
                     if FLAGS.capture:
-                        os.system('raspistill -o ' + FLAGS.output + "/" + ("%03d" % count) + '.jpg -t 1 -n ' + config)
+                        os.system('raspistill -o ' + FLAGS.output + "/" + ("%03d_%d" % (count, k)) + '.jpg -t 1 -n ' + config)
                     else:
                         time.sleep(0.5)
-                    count += 1
+                count += 1
             self.st.move(1, int(round(self.panDiff * 512.0 / 360)), 0.008)
 
     def done(self):
