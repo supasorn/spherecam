@@ -5,11 +5,12 @@ import gflags
 import re
 import exifread
 import math
+from time import gmtime, strftime
 
 FLAGS = gflags.FLAGS
-gflags.DEFINE_string('output', 'cap5', 'Output folder')
+gflags.DEFINE_string('output', '', 'Output folder')
 gflags.DEFINE_string('iso', '200', 'ISO')
-gflags.DEFINE_string('bracket', '1.58,-1.58', 'exposure bracketing')
+gflags.DEFINE_string('bracket', '1.58,-2', 'exposure bracketing')
 gflags.DEFINE_bool('capture', False, 'start real capturing')
 gflags.DEFINE_string('ud', '80,-80,20', 'Up Down direction')
 
@@ -96,8 +97,16 @@ def main(argv):
       print '%s\\nUsage: %s ARGS\\n%s' % (e, sys.argv[0], FLAGS)
       sys.exit(1)
 
+    if len(FLAGS.output) == 0:
+        FLAGS.output = strftime("%Y_%m_%d_%H:%M:%S", gmtime())
+
     if not os.path.exists(FLAGS.output):
         os.mkdir(FLAGS.output)
+    else:
+        choice = raw_input("Capture already exists. Replace [y/n]?").lower()
+        if choice not in ['y']:
+            exit(0)
+        
     p = Panner()
     p.setPanTilt(360, 36)
     p.capture()
