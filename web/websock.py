@@ -13,6 +13,10 @@ socketio = SocketIO(app)
 def index():
     return render_template('index.html')
 
+@app.route('/shot')
+def shot():
+    return render_template('shot.html')
+
 @socketio.on('my event', namespace='/test')
 def test_message(message):
     for i in range(3):
