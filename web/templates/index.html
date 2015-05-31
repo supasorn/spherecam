@@ -19,6 +19,10 @@
                 $('#log').append('<br>Received #' + msg.data);
             });
 
+            socket.on('log', function(msg) {
+                $('#log').append('<br>Received #' + msg.data);
+            });
+
             socket.on('capturewb', function(msg) {
                 $('#wbsample').append(msg.wb + '<br/><img src="' + msg.url + '" width="300px"/><br/>');
             });

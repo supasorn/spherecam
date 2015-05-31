@@ -24,6 +24,7 @@ if len(sys.argv) == 2:
 while 1:
     if checkState(): # access point
         start = 0
+        shouldRestart = ip() != "10.5.5.1"
         while ip() != "10.5.5.1":
             if time.time() - start > 3:
                 os.system("ifconfig wlan0 10.5.5.1")
@@ -32,9 +33,11 @@ while 1:
             time.sleep(0.5)
             GPIO.output(31, 0)
             time.sleep(0.5)
-        os.system("service isc-dhcp-server restart")
+        if shouldRestart:
+            os.system("service isc-dhcp-server restart")
     else:
         pass
+    time.sleep(10)
     break 
 
     #print checkState()

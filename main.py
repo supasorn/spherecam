@@ -11,7 +11,7 @@ FLAGS = gflags.FLAGS
 gflags.DEFINE_string('output', '', 'Output folder')
 gflags.DEFINE_string('iso', '200', 'ISO')
 gflags.DEFINE_string('bracket', '1.58,-2', 'exposure bracketing')
-gflags.DEFINE_bool('capture', False, 'start real capturing')
+gflags.DEFINE_bool('capture', True, 'start real capturing')
 gflags.DEFINE_string('ud', '80,-80,20', 'Up Down direction')
 
 def measure(ISO):

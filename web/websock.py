@@ -25,19 +25,24 @@ def test_connect():
 
 
 def captureWB(wb):
+    print "capturing %s" % wb
     folder = "static/capturewb"
     if not os.path.exists(folder):
         os.mkdir(folder)
 
-    os.system("cp /home/supasorn/pano/outside/021_0.jpg " + folder + "/" + wb)
-    return "/" + folder + "/" + wb
+    #os.system("cp /home/supasorn/pano/outside/021_0.jpg " + folder + "/" + wb)
+    os.system("raspistill -t 2000 -vf -hf -w 320 -h 240 -awb " + wb + " -o " + folder + "/" + wb + ".jpg")
+
+    return "/" + folder + "/" + wb + ".jpg"
 
 @socketio.on('capturewb', namespace="/test")
 def capturewb():
-    wbs = ['sunny', 'shade']
+    wbs = ['auto', 'sun', 'cloud', 'shade', 'tungsten', 'fluorescent', 'incandescent', 'flash', 'horizon']
     for wb in wbs:
         url = captureWB(wb)
         emit('capturewb', {'wb': wb, 'url': url})
+        emit('log', {'data': wb})
+        time.sleep(0.1)
 
 @socketio.on('disconnect request', namespace='/test')
 def disconnect_request():
