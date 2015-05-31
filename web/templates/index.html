@@ -12,39 +12,41 @@
             // this is specially important when using the global namespace
             var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
             socket.on('connect', function() {
-                //socket.emit('my event', {data: 'I\'m connected!'});
                 $('#log').append('<br>Client Connected!');
             });
 
             socket.on('my response', function(msg) {
                 $('#log').append('<br>Received #' + msg.data);
             });
-            
-            $('form#emit').submit(function(event) {
-                socket.emit('my event', {data: $('#emit_data').val()});
-                return false;
+
+            socket.on('capturewb', function(msg) {
+                $('#wbsample').append(msg.wb + '<br/><img src="' + msg.url + '" width="300px"/><br/>');
             });
+            
+            //$('form#emit').submit(function(event) {
+            //    socket.emit('my event', {data: $('#emit_data').val()});
+            //    return false;
+            //});
 
-
-
-            $('form#disconnect').submit(function(event) {
-                socket.emit('disconnect request');
+            $('form#capture').submit(function(event) {
+                socket.emit('capturewb');
                 return false;
             });
         });
     </script>
 </head>
 <body>
-    <h1>Flask-SocketIO Test</h1>
-    <h2>Send:</h2>
+    <h2>White Balance:</h2>
+    <form id="capture" method="POST" action="#">
+        <input type="submit" value="Capture">
+    </form>
+    <div id="wbsample"></div>
+    
+    <h2>Receive:</h2>
+    <div id="log"></div>
     <form id="emit" method="POST" action='#'>
         <input type="text" name="emit_data" id="emit_data" placeholder="Message">
         <input type="submit" value="Echo">
     </form>
-     <form id="disconnect" method="POST" action="#">
-        <input type="submit" value="Disconnect">
-    </form>
-    <h2>Receive:</h2>
-    <div id="log"></div>
 </body>
 </html>
