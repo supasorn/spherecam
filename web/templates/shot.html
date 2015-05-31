@@ -3,7 +3,6 @@
 <head>
     <title>SphereCam Shot</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="{{url_for('static', filename='main.css')}}" />
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
@@ -38,6 +37,7 @@
             });*/
         });
     </script>
+    <link rel="stylesheet" href="{{url_for('static', filename='main.css')}}" />
 </head>
 <body>
     <!--<form id="capture" method="POST" action="#">-->
@@ -46,7 +46,7 @@
     <div id="content">
         <a href="#" class="ui-btn ui-corner-all">Capture</a>
         <div style="width: 1000px; margin: 0 auto;">
-<h2>Size:</h2>
+<label>Size:</label>
 <form id="size">
 <fieldset data-role="controlgroup" data-type="horizontal">
 {% for item in sizeOptions %}<input type="radio" name="{{item.group}}" id="{{item.id}}" {% if item.pick %} value="on" checked="checked" {% else %} value="off" {% endif %}><label for="{{item.id}}">{{item.name}}</label>
@@ -54,7 +54,7 @@
 </fieldset>
 </form>
 
-<h2>Time (seconds):</h2>
+<label>Time (seconds):</label>
 <form id="time">
 <fieldset data-role="controlgroup" data-type="horizontal">
 {% for item in timeOptions %}<input type="radio" name="{{item.group}}" id="{{item.id}}" {% if item.pick %} value="on" checked="checked" {% else %} value="off" {% endif %}><label for="{{item.id}}">{{item.name}}</label>
@@ -62,7 +62,7 @@
 </fieldset>
 </form>
 
-<h2>ISO (x100):</h2>
+<label>ISO (x100):</label>
 <form id="iso">
 <fieldset data-role="controlgroup" data-type="horizontal">
 {% for item in isoOptions %}<input type="radio" name="{{item.group}}" id="{{item.id}}" {% if item.pick %} value="on" checked="checked" {% else %} value="off" {% endif %}><label for="{{item.id}}">{{item.name}}</label>
@@ -70,8 +70,16 @@
 </fieldset>
 </form>
 
-<h2>Exposure Time:</h2>
+<label>Exposure Time:</label>
 <form><input type="range" name="slider-1" id="slider-1" min="0" max="100" value="50" >
+</form>
+<form><div class="ui-field-contain">
+        <label for="flip-6">Flip Image:</label>
+        <select name="flip-6" id="flip-6" data-role="slider">
+            <option value="off">Off</option>
+            <option value="on">On</option>
+        </select>
+    </div>
 </form>
         </div>
     </div>
