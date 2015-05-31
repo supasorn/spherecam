@@ -13,9 +13,17 @@ socketio = SocketIO(app)
 def index():
     return render_template('index.html')
 
+
+def generateOptions(name, opt, default):
+    return [{"name": x, "id": name + "_" + x, "pick": x == default, "group": name + "Options"} for x in opt]
+
 @app.route('/shot')
 def shot():
-    return render_template('shot.html')
+
+    sizeOptions = generateOptions("size", ["Small", "Medium", "Large", "Full"], "Full")
+    timeOptions = generateOptions("time", ["0", "0.5", "1", "2", "5"], "2")
+    isoOptions = generateOptions("iso", ["1", "2", "3", "4", "5", "6", "7", "8", "A"], "A")
+    return render_template('shot.html', sizeOptions = sizeOptions, timeOptions = timeOptions, isoOptions = isoOptions)
 
 @socketio.on('my event', namespace='/test')
 def test_message(message):

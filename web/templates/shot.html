@@ -46,55 +46,31 @@
     <div id="content">
         <a href="#" class="ui-btn ui-corner-all">Capture</a>
         <div style="width: 1000px; margin: 0 auto;">
-            <h2>Size:</h2>
+<h2>Size:</h2>
+<form id="size">
 <fieldset data-role="controlgroup" data-type="horizontal">
-                <input type="radio" name="radio-choice-h-2" id="radio-choice-h-2a" value="on" checked="checked">
-                <label for="radio-choice-h-2a">Small</label>
-                <input type="radio" name="radio-choice-h-2" id="radio-choice-h-2b" value="off">
-                <label for="radio-choice-h-2b">Medium</label>
-                <input type="radio" name="radio-choice-h-2" id="radio-choice-h-2c" value="off">
-                <label for="radio-choice-h-2c">Large</label>
-                <input type="radio" name="radio-choice-h-2" id="radio-choice-h-2d" value="off">
-                <label for="radio-choice-h-2d">Full</label>
-            </fieldset>
-            <h2>Time (seconds):</h2>
-            <form id="time">
-<fieldset data-role="controlgroup" data-type="horizontal">
-                <input type="radio" name="time" id="time1" value="on" checked="checked">
-                <label for="time1">0</label>
-                <input type="radio" name="time" id="time2" value="off">
-                <label for="time2">0.5</label>
-                <input type="radio" name="time" id="time3" value="off">
-                <label for="time3">1</label>
-                <input type="radio" name="time" id="time4" value="off">
-                <label for="time4">2</label>
-                <input type="radio" name="time" id="time5" value="off">
-                <label for="time5">5</label>
-            </fieldset>
-    </form>
-            <h2>ISO (x 100):</h2>
-            <form id="iso">
-<fieldset data-role="controlgroup" data-type="horizontal">
-                <input type="radio" name="time" id="iso1" value="on" checked="checked">
-                <label for="iso1">1</label>
-                <input type="radio" name="time" id="iso2" value="on" checked="checked">
-                <label for="iso2">2</label>
-                <input type="radio" name="time" id="iso3" value="on" checked="checked">
-                <label for="iso3">3</label>
-                <input type="radio" name="time" id="iso4" value="on" checked="checked">
-                <label for="iso4">4</label>
-                <input type="radio" name="time" id="iso5" value="on" checked="checked">
-                <label for="iso5">5</label>
-                <input type="radio" name="time" id="iso6" value="on" checked="checked">
-                <label for="iso6">6</label>
-                <input type="radio" name="time" id="iso7" value="on" checked="checked">
-                <label for="iso7">7</label>
-                <input type="radio" name="time" id="iso8" value="on" checked="checked">
-                <label for="iso8">8</label>
-            </fieldset>
-    </form>
+{% for item in sizeOptions %}<input type="radio" name="{{item.group}}" id="{{item.id}}" {% if item.pick %} value="on" checked="checked" {% else %} value="off" {% endif %}><label for="{{item.id}}">{{item.name}}</label>
+{% endfor %}
+</fieldset>
+</form>
 
-            <h2>Exposure Time:</h2>
+<h2>Time (seconds):</h2>
+<form id="time">
+<fieldset data-role="controlgroup" data-type="horizontal">
+{% for item in timeOptions %}<input type="radio" name="{{item.group}}" id="{{item.id}}" {% if item.pick %} value="on" checked="checked" {% else %} value="off" {% endif %}><label for="{{item.id}}">{{item.name}}</label>
+{% endfor %}
+</fieldset>
+</form>
+
+<h2>ISO (x100):</h2>
+<form id="iso">
+<fieldset data-role="controlgroup" data-type="horizontal">
+{% for item in isoOptions %}<input type="radio" name="{{item.group}}" id="{{item.id}}" {% if item.pick %} value="on" checked="checked" {% else %} value="off" {% endif %}><label for="{{item.id}}">{{item.name}}</label>
+{% endfor %}
+</fieldset>
+</form>
+
+<h2>Exposure Time:</h2>
 <form><input type="range" name="slider-1" id="slider-1" min="0" max="100" value="50" >
 </form>
         </div>
