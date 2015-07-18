@@ -18,6 +18,7 @@ print "SphereCam Script"
 if sys.argv[1] == "1":
     cmd("cp interfaces /etc/network/interfaces")
     cmd("cp hostapd.conf /etc/hostapd/hostapd.conf")
+    cmd("cp ifplugd /etc/default/ifplugd")
     cmd("killall wpa_supplicant")
     cmd("service networking restart")
     cmd("service hostapd restart")
@@ -26,6 +27,7 @@ if sys.argv[1] == "1":
     #f.write("done\n")
 else:
     cmd("cp interfaces.backup /etc/network/interfaces")
+    cmd("cp ifplugd.backup /etc/default/ifplugd")
     cmd("service hostapd stop")
     cmd("service isc-dhcp-server stop")
     cmd("service networking restart")
