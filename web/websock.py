@@ -43,7 +43,7 @@ def captureWB(wb):
         os.mkdir(folder)
 
     #os.system("cp /home/supasorn/pano/outside/021_0.jpg " + folder + "/" + wb)
-    os.system("raspistill -t 2000 -vf -hf -w 320 -h 240 -awb " + wb + " -o " + folder + "/" + wb + ".jpg")
+    os.system("raspistill -st -t 2000 -vf -hf -w 320 -h 240 -awb " + wb + " -o " + folder + "/" + wb + ".jpg")
 
     return "/" + folder + "/" + wb + ".jpg"
 
