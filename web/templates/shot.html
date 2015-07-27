@@ -3,12 +3,10 @@
 <head>
     <title>SphereCam Shot</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
-
+    <link rel="stylesheet" href="{{url_for('static', filename='jquery.mobile-1.4.5.min.css')}}"/>
+    <script src="{{url_for('static', filename='jquery-1.11.1.min.js')}}"></script>
+    <script src="{{url_for('static', filename='jquery.mobile-1.4.5.min.js')}}"></script>
+    <script src="{{url_for('static', filename='socket.io-1.3.5.js')}}"></script>
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function(){
             namespace = '/test'; // change to an empty string to use the global namespace

@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>SphereCam Shot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{url_for('static', filename='jquery.mobile-1.4.5.min.css')}}"/>
+    <script src="{{url_for('static', filename='jquery-1.11.1.min.js')}}"></script>
+    <script src="{{url_for('static', filename='jquery.mobile-1.4.5.min.js')}}"></script>
+    <script src="{{url_for('static', filename='socket.io.min.js')}}"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function(){
+            namespace = '/test'; // change to an empty string to use the global namespace
+            
+            var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+            socket.on('connect', function() {
+                $('#log').append('<br>Client Connected!');
+            });
+
+            socket.on('my response', function(msg) {
+                $('#log').append('<br>Received #' + msg.data);
+            });
+
+            socket.on('capturewb', function(msg) {
+                $('#wbsample').append(msg.wb + '<br/><img src="' + msg.url + '" width="300px"/><br/>');
+            });
+            
+            //$('form#emit').submit(function(event) {
+            //    socket.emit('my event', {data: $('#emit_data').val()});
+            //    return false;
+            //});
+
+            socket.on('progress', function(msg) {
+                $('#log').prepend('<br>Received #' + msg.v);
+            });
+
+            $('form#capture').submit(function(event) {
+                var st = "";
+                $("input[name=bracketPosOptions]:checked").each(
+                    function() {
+                        if (st.length > 0)
+                            st += ",";
+                        st += $(this).val();
+                    });
+                $("input[name=bracketNegOptions]:checked").each(
+                    function() {
+                        if (st.length > 0)
+                            st += ",";
+                        st += "-" + $(this).val();
+                    });
+                socket.emit('capture', {
+                    iso: parseInt($("input[name=isoOptions]:checked").val()) * 100,
+                    evs: st});
+                return false;
+            });
+        });
+    </script>
+    <link rel="stylesheet" href="{{url_for('static', filename='main.css')}}" />
+</head>
+<body>
+    <!--<form id="capture" method="POST" action="#">-->
+        <!--<input type="submit" value="Capture">-->
+    <!--</form>-->
+    <div id="content">
+        <div style="width: 320px; margin: 0 auto;">
+            <label>Dataset:</label>
+            <input type="text" name="dataset" id="dataset" value="" data-clear-btn="true">
+            
+
+
+            <label>Bracketing +</label>
+            <form id="bracketpos">
+                <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                    {% for item in bracketPosOptions %}<input type="checkbox" name="{{item.group}}" id="{{item.id}}" value="{{item.name}}" {% if item.pick %} value="on" checked="checked" {% else %} value="off" {% endif %}><label for="{{item.id}}">{{item.name}}</label>
+                    {% endfor %}
+                </fieldset>
+            </form>
+
+            <label>Bracketing -</label>
+            <form id="bracketneg">
+                <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                    {% for item in bracketNegOptions %}<input type="checkbox" name="{{item.group}}" id="{{item.id}}" value="{{item.name}}" {% if item.pick %} value="on" checked="checked" {% else %} value="off" {% endif %}><label for="{{item.id}}">{{item.name}}</label>
+                    {% endfor %}
+                </fieldset>
+            </form>
+            
+
+            <label>ISO (x100):</label>
+            <form id="iso">
+                <fieldset data-role="controlgroup" data-type="horizontal">
+                    {% for item in isoOptions %}<input type="radio" name="{{item.group}}" id="{{item.id}}" value="{{item.name}}" {% if item.pick %} checked="checked" {% endif %}><label for="{{item.id}}">{{item.name}}</label>
+                    {% endfor %}
+                </fieldset>
+            </form>
+
+            <hr/>
+            <form id="capture" method="POST" action="#">
+            <input type="submit" value="Capture">
+            </form>
+            <div id="log"></div>
+        </div>
+    </div>
+</body>
+</html>

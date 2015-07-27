@@ -9,7 +9,8 @@ app.debug = True
 app.config['SECRET_KEY'] = 'ababa'
 socketio = SocketIO(app)
 
-root = '/home/pi/pano/'
+#root = '/home/pi/pano/'
+root = '/Users/supasorn/spherecam/'
 
 @app.route('/')
 def index():
@@ -18,15 +19,17 @@ def index():
 @app.route('/images/<path:f>')
 def images(f):
     print f
-    return send_file('/home/pi/pano/captures/' + f)
+    return send_file(root + 'captures/' + f)
 
 @app.route('/view/<dataset>')
 def view(dataset):
     st = '<meta name="viewport" content"width=device-width, initial-scale=1"/>'
     if not os.path.exists(root + '/captures/thumbnails/' + dataset):
+        print "mkdir " + root + '/captures/thumbnails/' + dataset
         os.mkdir(root + '/captures/thumbnails/' + dataset);
 
-    for i in range(1, 4):
+    
+    for i in range(1, 13):
         for j in range(3):
             f = '%03d_%d.jpg' % (i, j)
             if not os.path.exists(root + '/captures/thumbnails/' + dataset + '/' + f):

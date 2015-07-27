@@ -2,6 +2,8 @@ from flask import Flask, render_template
 from flask.ext.socketio import SocketIO, emit, disconnect
 import time
 import os
+import subprocess
+
 
 app = Flask(__name__)
 app.debug = True
@@ -15,7 +17,15 @@ def index():
 
 
 def generateOptions(name, opt, default):
-    return [{"name": x, "id": name + "_" + x, "pick": x == default, "group": name + "Options"} for x in opt]
+    return [{"name": x, "id": name + "_" + x, "pick": x in default, "group": name + "Options"} for x in opt]
+
+@app.route('/pano')
+def pano():
+
+    isoOptions = generateOptions("iso", ["1", "2", "4", "6", "8", "A"], "2")
+    bracketPosOptions = generateOptions("bracketPos", ["1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0"], "2.0")
+    bracketNegOptions = generateOptions("bracketNeg", ["1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0"], "2.0")
+    return render_template('pano.html', isoOptions = isoOptions, bracketPosOptions = bracketPosOptions, bracketNegOptions = bracketNegOptions)
 
 @app.route('/shot')
 def shot():
@@ -46,6 +56,16 @@ def captureWB(wb):
     os.system("raspistill -st -t 2000 -vf -hf -w 320 -h 240 -awb " + wb + " -o " + folder + "/" + wb + ".jpg")
 
     return "/" + folder + "/" + wb + ".jpg"
+
+@socketio.on('capture', namespace="/test")
+def capture(message):
+    cmd = "ls"
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=1)
+    for line in iter(p.stdout.readline, b''):
+        emit('progress', {'v': line})
+    p.stdout.close()
+    p.wait() 
+    #emit('progress', {'v': message['iso']})
 
 @socketio.on('capturewb', namespace="/test")
 def capturewb():

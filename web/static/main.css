@@ -17,3 +17,14 @@
     width: 25px;
     text-align: center;
 }
+
+#bracketpos label, #bracketneg label {
+    padding-left: 7px;
+    padding-right: 7px;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+}
