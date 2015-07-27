@@ -18,6 +18,8 @@ gflags.DEFINE_bool('bracket', True, 'Use bracketing')
 gflags.DEFINE_bool('capture', True, 'start real capturing')
 #gflags.DEFINE_string('ud', '80,-60,20', 'Up Down direction')
 gflags.DEFINE_string('ud', '70,-40,50', 'Up Down direction')
+gflags.DEFINE_bool('overwrite', False, 'Overwrite existing datast')
+gflags.DEFINE_bool('interactive', True, 'interactive')
 
 def measure(ISO):
     print "Configuring camera setting..."
@@ -125,9 +127,15 @@ def main(argv):
         if not os.path.exists(FLAGS.output):
             os.mkdir(FLAGS.output)
         else:
-            choice = raw_input("Capture already exists. Replace [y/n]?").lower()
-            if choice not in ['y']:
-                exit(0)
+            if FLAGS.overwrite:
+                print "Overwrite existing"
+            else 
+                if FLAGS.interactive:
+                    choice = raw_input("Capture already exists. Replace [y/n]?").lower()
+                    if choice not in ['y']:
+                        exit(0)
+                else:
+                    print "Capture already exists."
         
     p = Panner()
     #p.setPanTilt(360, 36)

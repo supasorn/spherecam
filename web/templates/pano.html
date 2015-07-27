@@ -48,9 +48,10 @@
                         st += "-" + $(this).val();
                     });
                 socket.emit('capture', {
-                    iso: parseInt($("input[name=isoOptions]:checked").val()) * 100,
+                    iso: $("input[name=isoOptions]:checked").val(),
                     evs: st,
-                    dataset: $("input[name=dataset]").val()
+                    dataset: $("input[name=dataset]").val(),
+                    overwrite: $("input[name=overwrite]").is(':checked')
                 });
                 return false;
             });
@@ -92,6 +93,11 @@
                     {% for item in isoOptions %}<input type="radio" name="{{item.group}}" id="{{item.id}}" value="{{item.name}}" {% if item.pick %} checked="checked" {% endif %}><label for="{{item.id}}">{{item.name}}</label>
                     {% endfor %}
                 </fieldset>
+            </form>
+
+            <form>
+              <label>Overwrite</label>
+              <input type="checkbox" data-role="flipswitch" name="overwrite" data-on-text="Yes" data-off-text="No" data-wrapper-class="custom-label-flipswitch">
             </form>
 
             <hr/>

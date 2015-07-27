@@ -59,7 +59,11 @@ def captureWB(wb):
 
 @socketio.on('capture', namespace="/test")
 def capture(message):
-    cmd = "python ../main.py --output=" + message["dataset"] + " --evs=" + message["evs"]
+    isoFlag = "--iso=" + str(int(message["iso"]) * 100) if message["iso"] != "A" else ""
+    overwriteFlag = "--overwrite" if message["overwrite"] else ""
+    outputFlag = "--output=" + message["dataset"] if len(message["dataset"]) > 0 else ""
+
+    cmd = "python ../main.py " + outputFlag + " --evs=" + message["evs"] + " " + isoFlag + " --nointeractive " + overwriteFlag
     #p = subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=1)
     #for line in iter(p.stdout.readline, b''):
         #emit('progress', {'v': line})
