@@ -30,9 +30,12 @@
             //});
 
             socket.on('progress', function(msg) {
-                $('#log').prepend('<br>Received #' + msg.v);
+                $('#log').prepend('<br>' + msg.v);
             });
 
+            $('form#view').submit(function(event) {
+                window.location.href = "/view/" + $("input[name=dataset]").val();
+            });
             $('form#capture').submit(function(event) {
                 var st = "";
                 $("input[name=bracketPosOptions]:checked").each(
@@ -103,6 +106,9 @@
             <hr/>
             <form id="capture" method="POST" action="#">
             <input type="submit" value="Capture">
+            </form>
+            <form id="view" method="POST" action="#">
+            <input type="submit" value="View">
             </form>
             <div id="log"></div>
         </div>
