@@ -59,13 +59,13 @@ def captureWB(wb):
 
 @socketio.on('capture', namespace="/test")
 def capture(message):
-    cmd = "ls"
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=1)
-    for line in iter(p.stdout.readline, b''):
-        emit('progress', {'v': line})
-    p.stdout.close()
-    p.wait() 
-    #emit('progress', {'v': message['iso']})
+    cmd = "python ../main.py --output=" + message["dataset"] + " --evs=" + message["evs"]
+    #p = subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=1)
+    #for line in iter(p.stdout.readline, b''):
+        #emit('progress', {'v': line})
+    #p.stdout.close()
+    #p.wait() 
+    emit('progress', {'v': cmd})
 
 @socketio.on('capturewb', namespace="/test")
 def capturewb():

@@ -49,7 +49,9 @@
                     });
                 socket.emit('capture', {
                     iso: parseInt($("input[name=isoOptions]:checked").val()) * 100,
-                    evs: st});
+                    evs: st,
+                    dataset: $("input[name=dataset]").val()
+                });
                 return false;
             });
         });
