@@ -7,7 +7,7 @@ import subprocess
 
 
 app = Flask(__name__)
-app.debug = True
+app.debug = False
 app.config['SECRET_KEY'] = 'ababa'
 socketio = SocketIO(app)
 
@@ -64,7 +64,7 @@ def capture(message):
     isoFlag = "--iso=" + str(int(message["iso"]) * 100) if message["iso"] != "A" else ""
     overwriteFlag = "--overwrite" if message["overwrite"] else ""
     outputFlag = "--output=" + message["dataset"] if len(message["dataset"]) > 0 else ""
-    evsFlag = "--evs=" + message["evs"] if len(message["evs"]) > 0 else ""
+    evsFlag = "--evs=" + message["evs"] if len(message["evs"]) > 0 else "--nobracket"
 
     cmd = "python /home/pi/pano/main.py " + outputFlag + " " + evsFlag + " " + isoFlag + " --nointeractive " + overwriteFlag
     #cmd = "ls"
@@ -105,7 +105,7 @@ def view(dataset):
         for j in range(3):
             f = '%03d_%d.jpg' % (i, j)
             if os.path.exists(root + "/captures/" + dataset + "/" + f):
-                st += "<img width='350' src='/images/" + dataset + "/" + f + "'/><br/>"
+                st += "<img width='400' src='/images/" + dataset + "/" + f + "'/><br/>"
         st += "<br/><br/>"
     return st
 
