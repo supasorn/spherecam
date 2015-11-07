@@ -6,7 +6,7 @@ import sys
 dataset = "captures/wide5"
 
 def worker(x):
-    st = "./enfuse " 
+    st = "enfuse " 
     k = 0
     print dataset + "/%03d_%d.jpg" % (x, k)
     print os.path.exists(dataset + "/%03d_%d.jpg" % (x, k))
