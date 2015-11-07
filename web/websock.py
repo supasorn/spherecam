@@ -1,15 +1,17 @@
 from flask import Flask, render_template
 from flask.ext.socketio import SocketIO, emit, disconnect
 import time
+from flask import send_file
 import os
 import subprocess
 
 
 app = Flask(__name__)
-app.debug = True
+app.debug = False
 app.config['SECRET_KEY'] = 'ababa'
 socketio = SocketIO(app)
 
+root = '/home/pi/pano/'
 
 @app.route('/')
 def index():
@@ -62,14 +64,15 @@ def capture(message):
     isoFlag = "--iso=" + str(int(message["iso"]) * 100) if message["iso"] != "A" else ""
     overwriteFlag = "--overwrite" if message["overwrite"] else ""
     outputFlag = "--output=" + message["dataset"] if len(message["dataset"]) > 0 else ""
+    evsFlag = "--evs=" + message["evs"] if len(message["evs"]) > 0 else "--nobracket"
 
-    cmd = "python ../main.py " + outputFlag + " --evs=" + message["evs"] + " " + isoFlag + " --nointeractive " + overwriteFlag
-    #p = subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=1)
-    #for line in iter(p.stdout.readline, b''):
-        #emit('progress', {'v': line})
-    #p.stdout.close()
-    #p.wait() 
-    emit('progress', {'v': cmd})
+    cmd = "python /home/pi/pano/main.py " + outputFlag + " " + evsFlag + " " + isoFlag + " --nointeractive " + overwriteFlag
+    #cmd = "ls"
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    for line in iter(p.stdout.readline, b''):
+        emit('progress', {'v': line})
+    p.stdout.close()
+    p.wait() 
 
 @socketio.on('capturewb', namespace="/test")
 def capturewb():
@@ -84,6 +87,27 @@ def capturewb():
 def disconnect_request():
     emit('my response', {'data': 'Disconnected!'})
     disconnect()
+
+@app.route('/images/<path:f>')
+def images(f):
+    print f
+    return send_file(root + 'captures/' + f)
+
+@app.route('/view/<dataset>')
+def view(dataset):
+    st = '<meta name="viewport" content"width=device-width, initial-scale=1"/>'
+    if not os.path.exists(root + '/captures/thumbnails/' + dataset):
+        print "mkdir " + root + '/captures/thumbnails/' + dataset
+        os.mkdir(root + '/captures/thumbnails/' + dataset);
+
+    
+    for i in range(1, 4):
+        for j in range(3):
+            f = '%03d_%d.jpg' % (i, j)
+            if os.path.exists(root + "/captures/" + dataset + "/" + f):
+                st += "<img width='400' src='/images/" + dataset + "/" + f + "'/><br/>"
+        st += "<br/><br/>"
+    return st
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0')

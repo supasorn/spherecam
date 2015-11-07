@@ -29,13 +29,14 @@ def view(dataset):
         os.mkdir(root + '/captures/thumbnails/' + dataset);
 
     
-    for i in range(1, 13):
+    for i in range(1, 4):
         for j in range(3):
             f = '%03d_%d.jpg' % (i, j)
             if not os.path.exists(root + '/captures/thumbnails/' + dataset + '/' + f):
                 os.system("convert " + root + '/captures/' + dataset + '/' + f + " -resize 15\% " + root + "/captures/thumbnails/" + dataset + "/" + f)
             if os.path.exists(root + "/captures/thumbnails/" + dataset + "/" + f):
-                st += "<img src='/images/thumbnails/" + dataset + "/" + f + "'/><br/>"
+                #st += "<img src='/images/thumbnails/" + dataset + "/" + f + "'/><br/>"
+                st += "<img width='100' src='/images/" + dataset + "/" + f + "'/><br/>"
         st += "<br/><br/>"
     return st
 

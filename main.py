@@ -21,8 +21,10 @@ gflags.DEFINE_string('ud', '70,-40,50', 'Up Down direction')
 gflags.DEFINE_bool('overwrite', False, 'Overwrite existing datast')
 gflags.DEFINE_bool('interactive', True, 'interactive')
 
+root = "/home/pi/pano/"
 def measure(ISO):
     print "Configuring camera setting..."
+    sys.stdout.flush()
     et = os.popen("raspistill -n -t 2000 -o test.jpg -ISO " + ISO + " -set 2>&1").read().split("\n")
     lastline = et[-2]
     exp = re.findall("now (\d*)", et[-3])[0]
@@ -121,7 +123,9 @@ def main(argv):
       sys.exit(1)
 
     if len(FLAGS.output) == 0:
-        FLAGS.output = strftime("%Y_%m_%d_%H:%M:%S", gmtime())
+        FLAGS.output = root + "captures/" + strftime("%Y_%m_%d_%H:%M:%S", gmtime())
+    else:
+        FLAGS.output = root + "captures/" + FLAGS.output
 
     if FLAGS.capture:
         if not os.path.exists(FLAGS.output):
@@ -129,13 +133,14 @@ def main(argv):
         else:
             if FLAGS.overwrite:
                 print "Overwrite existing"
-            else 
+            else:
                 if FLAGS.interactive:
                     choice = raw_input("Capture already exists. Replace [y/n]?").lower()
                     if choice not in ['y']:
                         exit(0)
                 else:
                     print "Capture already exists."
+                    sys.exit(0)
         
     p = Panner()
     #p.setPanTilt(360, 36)
