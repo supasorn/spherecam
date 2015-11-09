@@ -93,21 +93,34 @@ def images(f):
     print f
     return send_file(root + 'captures/' + f)
 
-@app.route('/view/<dataset>')
-def view(dataset):
+def view(dataset, ran):
     st = '<meta name="viewport" content"width=device-width, initial-scale=1"/>'
     if not os.path.exists(root + '/captures/thumbnails/' + dataset):
         print "mkdir " + root + '/captures/thumbnails/' + dataset
         os.mkdir(root + '/captures/thumbnails/' + dataset);
 
     
-    for i in range(1, 4):
-        for j in range(3):
+    for i in ran:
+        for j in range(10):
             f = '%03d_%d.jpg' % (i, j)
             if os.path.exists(root + "/captures/" + dataset + "/" + f):
                 st += "<img width='400' src='/images/" + dataset + "/" + f + "'/><br/>"
+            else:
+                break
         st += "<br/><br/>"
     return st
+@app.route('/view/<dataset>')
+def view3(dataset):
+    return view(dataset, range(1, 4))
+
+@app.route('/viewall/<dataset>')
+def viewall(dataset):
+    return view(dataset, range(1, 13))
+
+@app.route('/halt')
+def halt():
+    os.system("sudo halt")
+    return ""
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0')
