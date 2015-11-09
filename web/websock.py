@@ -7,7 +7,7 @@ import subprocess
 
 
 app = Flask(__name__)
-app.debug = False
+app.debug = True
 app.config['SECRET_KEY'] = 'ababa'
 socketio = SocketIO(app)
 
@@ -23,11 +23,11 @@ def generateOptions(name, opt, default):
 
 @app.route('/pano')
 def pano():
-
     isoOptions = generateOptions("iso", ["1", "2", "4", "6", "8", "A"], "2")
     bracketPosOptions = generateOptions("bracketPos", ["1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0"], "2.0")
     bracketNegOptions = generateOptions("bracketNeg", ["1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0"], "2.0")
-    return render_template('pano.html', isoOptions = isoOptions, bracketPosOptions = bracketPosOptions, bracketNegOptions = bracketNegOptions)
+    wbOptions = generateOptions("wb", ["auto", "sun", "cloud", "shade", "tungsten", "fluorescent", "incandescent", "flash", "horizon"], "auto")
+    return render_template('pano.html', isoOptions = isoOptions, bracketPosOptions = bracketPosOptions, bracketNegOptions = bracketNegOptions, wbOptions = wbOptions)
 
 @app.route('/shot')
 def shot():
@@ -65,8 +65,8 @@ def capture(message):
     overwriteFlag = "--overwrite" if message["overwrite"] else ""
     outputFlag = "--output=" + message["dataset"] if len(message["dataset"]) > 0 else ""
     evsFlag = "--evs=" + message["evs"] if len(message["evs"]) > 0 else "--nobracket"
-
-    cmd = "python /home/pi/pano/main.py " + outputFlag + " " + evsFlag + " " + isoFlag + " --nointeractive " + overwriteFlag
+    wbFlag = "--wb=" + message["wb"]
+    cmd = "python /home/pi/pano/main.py " + outputFlag + " " + evsFlag + " " + isoFlag + " " + wbFlag + " --nointeractive " + overwriteFlag
     #cmd = "ls"
     p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     for line in iter(p.stdout.readline, b''):

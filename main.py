@@ -20,12 +20,13 @@ gflags.DEFINE_bool('capture', True, 'start real capturing')
 gflags.DEFINE_string('ud', '70,-40,50', 'Up Down direction')
 gflags.DEFINE_bool('overwrite', False, 'Overwrite existing datast')
 gflags.DEFINE_bool('interactive', True, 'interactive')
+gflags.DEFINE_string('wb', 'auto', 'White balance for measuring')
 
 root = "/home/pi/pano/"
 def measure(ISO):
     print "Configuring camera setting..."
     sys.stdout.flush()
-    et = os.popen("raspistill -n -t 2000 -o test.jpg -ISO " + ISO + " -set 2>&1").read().split("\n")
+    et = os.popen("raspistill -n -t 2000 -o test.jpg -ISO " + ISO + " -awb " + FLAGS.wb + " -set 2>&1").read().split("\n")
     lastline = et[-2]
     exp = re.findall("now (\d*)", et[-3])[0]
     #print exp
