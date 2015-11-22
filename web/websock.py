@@ -7,7 +7,7 @@ import subprocess
 
 
 app = Flask(__name__)
-app.debug = False
+app.debug = True
 app.config['SECRET_KEY'] = 'ababa'
 socketio = SocketIO(app)
 
@@ -21,13 +21,18 @@ def index():
 def generateOptions(name, opt, default):
     return [{"name": x, "id": name + "_" + x, "pick": x in default, "group": name + "Options"} for x in opt]
 
+@app.route('/r/<angle>')
+def r(angle):
+    os.system("python /home/pi/pano/motor.py " + angle)
+    return "OK"
+
 @app.route('/pano')
 def pano():
-
     isoOptions = generateOptions("iso", ["1", "2", "4", "6", "8", "A"], "2")
     bracketPosOptions = generateOptions("bracketPos", ["1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0"], "2.0")
     bracketNegOptions = generateOptions("bracketNeg", ["1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0"], "2.0")
-    return render_template('pano.html', isoOptions = isoOptions, bracketPosOptions = bracketPosOptions, bracketNegOptions = bracketNegOptions)
+    wbOptions = generateOptions("wb", ["auto", "sun", "cloud", "shade", "tungsten", "fluorescent", "incandescent", "flash", "horizon"], "auto")
+    return render_template('pano.html', isoOptions = isoOptions, bracketPosOptions = bracketPosOptions, bracketNegOptions = bracketNegOptions, wbOptions = wbOptions)
 
 @app.route('/shot')
 def shot():
@@ -65,8 +70,8 @@ def capture(message):
     overwriteFlag = "--overwrite" if message["overwrite"] else ""
     outputFlag = "--output=" + message["dataset"] if len(message["dataset"]) > 0 else ""
     evsFlag = "--evs=" + message["evs"] if len(message["evs"]) > 0 else "--nobracket"
-
-    cmd = "python /home/pi/pano/main.py " + outputFlag + " " + evsFlag + " " + isoFlag + " --nointeractive " + overwriteFlag
+    wbFlag = "--wb=" + message["wb"]
+    cmd = "python /home/pi/pano/main.py " + outputFlag + " " + evsFlag + " " + isoFlag + " " + wbFlag + " --nointeractive " + overwriteFlag
     #cmd = "ls"
     p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     for line in iter(p.stdout.readline, b''):
@@ -93,21 +98,34 @@ def images(f):
     print f
     return send_file(root + 'captures/' + f)
 
-@app.route('/view/<dataset>')
-def view(dataset):
+def view(dataset, ran):
     st = '<meta name="viewport" content"width=device-width, initial-scale=1"/>'
     if not os.path.exists(root + '/captures/thumbnails/' + dataset):
         print "mkdir " + root + '/captures/thumbnails/' + dataset
         os.mkdir(root + '/captures/thumbnails/' + dataset);
 
     
-    for i in range(1, 4):
-        for j in range(3):
+    for i in ran:
+        for j in range(10):
             f = '%03d_%d.jpg' % (i, j)
             if os.path.exists(root + "/captures/" + dataset + "/" + f):
                 st += "<img width='400' src='/images/" + dataset + "/" + f + "'/><br/>"
+            else:
+                break
         st += "<br/><br/>"
     return st
+@app.route('/view/<dataset>')
+def view3(dataset):
+    return view(dataset, range(1, 4))
+
+@app.route('/viewall/<dataset>')
+def viewall(dataset):
+    return view(dataset, range(1, 13))
+
+@app.route('/halt')
+def halt():
+    os.system("sudo halt")
+    return ""
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0')

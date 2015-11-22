@@ -54,7 +54,9 @@
                     iso: $("input[name=isoOptions]:checked").val(),
                     evs: st,
                     dataset: $("input[name=dataset]").val(),
-                    overwrite: $("input[name=overwrite]").is(':checked')
+                    overwrite: $("input[name=overwrite]").is(':checked'),
+                    wb: $("#wb :selected").text()
+
                 });
                 return false;
             });
@@ -96,6 +98,15 @@
                     {% for item in isoOptions %}<input type="radio" name="{{item.group}}" id="{{item.id}}" value="{{item.name}}" {% if item.pick %} checked="checked" {% endif %}><label for="{{item.id}}">{{item.name}}</label>
                     {% endfor %}
                 </fieldset>
+            </form>
+
+            <form>
+                <label>White Balance:</label>
+                <select id="wb">
+                    {% for item in wbOptions %}
+                    <option value="{{item.id}}">{{item.name}}</option>
+                    {% endfor %}
+                </select>
             </form>
 
             <form>
